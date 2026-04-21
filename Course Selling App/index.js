@@ -1,11 +1,10 @@
 const express = require('express');
+require("dotenv").config();
 const {mongoose, get} = require('mongoose');
-mongoose.connect("");
 const jwt = require('jsonwebtoken');
 const { userRouter } = require('./routes/user');
 const { courseRouter } = require('./routes/course');
 const { adminRouter } = require('./routes/admin');
-const JWT_SECRET = "";
 const app = express();
 
 app.use(express.json());
@@ -13,4 +12,9 @@ app.use("/api/v1/user",userRouter);
 app.use("/api/v1/course",courseRouter);
 app.use("/api/vi/admin",adminRouter);
 
-app.listen(3000);
+async function dbConnect() {
+    await mongoose.connect(process.env.MONGOCON)
+    app.listen(3000);
+}
+
+dbConnect()
