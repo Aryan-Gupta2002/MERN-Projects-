@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { adminModel} = require('./db');
 const JWT_ADMIN_SECRET = process.env.JWT_ADMIN_SECRET;
+const{adminAuth}=require('../middleware/admin')
 
 adminRouter.post('/course/signup',async function(req,res){
     // Input VAlidation Start using zod ------ 
@@ -79,9 +80,16 @@ adminRouter.post('/course/signin',async function(req,res){
         })
     }
 });
-adminRouter.post('/course/',function(req,res){
+adminRouter.post('/course/',adminAuth,async function(req,res){
+    const adminId = req.creatorID;
+    const {title,description,price,imageURL}=req.body;
+    const course =await courseModel.create({
+        title,description,price,imageURL,
+        creatorId:adminId
+    })
     res.json({
-            msg:"course creation"
+        msg;"Course created"
+        courseId;course._id
     })
 });
 adminRouter.put('/course/',function(req,res){
