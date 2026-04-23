@@ -95,21 +95,21 @@ adminRouter.post('/course',adminAuth,async function(req,res){
 });
 adminRouter.put('/course',adminAuth,async function(req,res){
     const adminId = req.creatorID;
-    const {title}=req.body;
+    const {title,description,price,imageURL,courseId}=req.body;
     const updatedCourse = await courseModel.updateOne(
-        {title},
+        {_id:courseId,creatorId:adminId
+        },
         {$set:{
-            title:"Web Development",
-            description:"This course is for those who want to learn Web dev",
-            price:5500,
-            imageURL:"dsdsdsdsdd",
-            creatorid: adminId
+            title:title,
+            description:description,
+            price:price,
+            imageURL:imageURL
         }}
     )
     res.json({
         msg:"Course updated successfuly"
     })
-});
+}); 
 adminRouter.get('/course/bulk',adminAuth,async function(req,res){
     const creatorId = new mongoose.Types.ObjectId(req.creatorID);
     const courses = await courseModel.find({
