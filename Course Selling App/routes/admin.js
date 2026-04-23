@@ -3,9 +3,10 @@ const adminRouter = Router();
 const {z} = require('zod');
 const jwt = require('jsonwebtoken'); 
 const bcrypt = require('bcrypt');
-const { adminModel} = require('./db');
+const { adminModel,courseModel} = require('./db');
 const JWT_ADMIN_SECRET = process.env.JWT_ADMIN_SECRET;
-const{adminAuth}=require('../middleware/admin')
+const{adminAuth}=require('../middleware/admin');
+const mongoose = require('mongoose');
 
 adminRouter.post('/course/signup',async function(req,res){
     // Input VAlidation Start using zod ------ 
@@ -80,7 +81,7 @@ adminRouter.post('/course/signin',async function(req,res){
         })
     }
 });
-adminRouter.post('/course/',adminAuth,async function(req,res){
+adminRouter.post('/course',adminAuth,async function(req,res){
     const adminId = req.creatorID;
     const {title,description,price,imageURL}=req.body;
     const course =await courseModel.create({
@@ -88,18 +89,35 @@ adminRouter.post('/course/',adminAuth,async function(req,res){
         creatorId:adminId
     })
     res.json({
-        msg;"Course created"
-        courseId;course._id
+        msg:"Course created",
+        courseId:course._id
     })
 });
-adminRouter.put('/course/',function(req,res){
+adminRouter.put('/course',adminAuth,async function(req,res){
+    const adminId = req.creatorID;
+    const {title}=req.body;
+    const updatedCourse = await courseModel.updateOne(
+        {title},
+        {$set:{
+            title:"Web Development",
+            description:"This course is for those who want to learn Web dev",
+            price:5500,
+            imageURL:"dsdsdsdsdd",
+            creatorid: adminId
+        }}
+    )
     res.json({
-            msg:"course update"
+        msg:"Course updated successfuly"
     })
 });
-adminRouter.get('/course/bulk',function(req,res){
+adminRouter.get('/course/bulk',adminAuth,async function(req,res){
+    const creatorId = new mongoose.Types.ObjectId(req.creatorID);
+    const courses = await courseModel.find({
+        creatorId:creatorId
+    })
+
     res.json({
-            msg:"get all courses"
+        courses
     })
 });
 module.exports ={
