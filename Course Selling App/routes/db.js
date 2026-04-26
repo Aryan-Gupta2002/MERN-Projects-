@@ -24,10 +24,22 @@ const Course = new Schema({
     creatorId : ObjectId
 })
 
+// const Purchase = new Schema({
+//     courseId : ObjectId,
+//     userId : ObjectId
+// })
+
+// Referencing
 const Purchase = new Schema({
-    courseId : ObjectId,
-    userId : ObjectId
-})
+    courseId: {
+        type: Schema.Types.ObjectId,
+        ref: "Course"   
+    },
+    userId: {
+        type: Schema.Types.ObjectId,
+        ref: "User"     
+    }
+});
 
 const userModel = mongoose.model('users',User);
 const adminModel = mongoose.model('admin',Admin);

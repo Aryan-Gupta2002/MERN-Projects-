@@ -7,9 +7,10 @@ const userRouter =  Router();   //Router is a function
 const {z} = require('zod');
 const jwt = require('jsonwebtoken'); 
 const bcrypt = require('bcrypt');
-const {userModel} = require('./db');
+const {userModel,purchaseModel, courseModel} = require('./db');
 const JWT_USER_SECRET = process.env.JWT_USER_SECRET;
-
+const{userAuth}=require('../middleware/user');
+const { default: mongoose } = require('mongoose');
 
 userRouter.post('/signup',async function(req,res){
     // Input VAlidation Start using zod ------ 
@@ -55,7 +56,7 @@ userRouter.post('/signup',async function(req,res){
             })
         }
 });
-userRouter.post('/signin',async function(req,res){
+userRouter.post('/signin',userAuth,async function(req,res){
         const email = req.body.email;
         const password = req.body.password;
         // Check if User exists
@@ -84,9 +85,25 @@ userRouter.post('/signin',async function(req,res){
             })
         }
 });
-userRouter.get('/purchases',function(req,res){
-res.json({
-        msg:"purchased courses"
+userRouter.get('/purchases',userAuth,async function(req,res){
+    const userId = new mongoose.Types.ObjectId(req.userId);
+    const courses = await purchaseModel.find({
+        userId:userId
+    }).populate("courseId");
+    if(!courses.length)(
+        res.json({
+            msg:'You have not purchased any course'
+        })
+    )
+    // Below is one way of getting data about purhased courses, however we will try referencing now
+    // const courseData = await courseModel.find({
+    //     _id: {$in : courses.map(x=>x.courseId)}
+    // })
+
+    res.json({
+        courses
+        // courses,
+        // courseData
     })
 });
 module.exports ={

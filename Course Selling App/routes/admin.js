@@ -8,7 +8,7 @@ const JWT_ADMIN_SECRET = process.env.JWT_ADMIN_SECRET;
 const{adminAuth}=require('../middleware/admin');
 const mongoose = require('mongoose');
 
-adminRouter.post('/course/signup',async function(req,res){
+adminRouter.post('/course/signup',async function(req,res){  
     // Input VAlidation Start using zod ------ 
     const requiredInputBody = z.object({
         email:z.string().email().min(3).max(30),
